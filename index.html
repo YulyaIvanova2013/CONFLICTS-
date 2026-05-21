@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+    :root{
+        --bg1:#e8f0ff;
+        --bg2:#efe7ff;
+        --card:#ffffff;
+        --primary:#6b5bdb;
+        --primary-dark:#5142bf;
+        --secondary:#4f8cff;
+        --text:#24324a;
+        --shadow:0 10px 24px rgba(77, 67, 146, 0.15);
+    }
+
+    * { 
+        box-sizing: border-box; 
+    }
+
+    html,
+    body{
+        width: 100%;
+        min-height: 100%;
+    }
+
+    body{
+        margin:0;
+        font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+        color:var(--text);
+        background: linear-gradient(135deg, var(--bg1), var(--bg2));
+        min-height:100vh;
+        padding:8px;
+        overflow-x: hidden;
+    }
+
+    .page{
+        width: 100%;
+        max-width: none;
+        margin: 0 auto;
+    }
+
+    h1{
+        text-align:center;
+        color:var(--primary-dark);
+        margin: 0 0 8px;
+        font-size: 36px;
+    }
+
+    .buttons{
+        display: flex;
+        justify-content: center;
+        align-items: stretch;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin: 8px 0;
+    }
+
+    .button{
+        background-color: var(--primary);
+        color: white;
+        font-size: 17px;
+        padding: 10px 16px;
+        margin: 0;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: background-color .3s ease, transform .2s ease;
+        border: 0;
+        min-height: 44px;
+    }
+
+    .button:hover{
+        background-color: var(--primary-dark);
+        transform: translateY(-2px);
+    }
+
+    .button.active{
+        background-color: var(--primary-dark);
+        transform: translateY(-2px);
+    }
+
+    .task-container{
+        background: var(--card);
+        border-radius: 14px;
+        padding: 8px;
+        box-shadow: var(--shadow);
+        min-height: calc(100vh - 90px);
+        margin-top: 8px;
+        width: 100%;
+    }
+
+    .task-title{
+        text-align:center;
+        color:var(--primary-dark);
+        margin: 0 0 8px;
+        font-size: 24px;
+        font-weight: bold;
+        line-height: 1.2;
+    }
+
+    .task-content{
+        font-size: 20px;
+        color: var(--text);
+        line-height: 1.6;
+        margin-bottom: 24px;
+    }
+
+    .instructions{
+        font-size: 20px;
+        margin-bottom: 12px;
+        font-weight: bold;
+    }
+
+    .message{
+        text-align:center;
+        margin-top:16px;
+        font-size:20px;
+        font-weight:700;
+        color:var(--primary-dark);
+        min-height: 24px;
+    }
+
+    .cover-image {
+        display: block;
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+        border-radius: 10px;
+        margin: 8px 0 0;
+    }
+
+    .task-frame{
+        display: block;
+        width: 100%;
+        height: calc(100vh - 145px);
+        min-height: 720px;
+        border: 0;
+        border-radius: 10px;
+        background: #fff;
+    }
+
+    @media (max-width: 900px){
+        body{
+            padding: 6px;
+        }
+
+        .page{
+            width: 100%;
+            padding: 0;
+        }
+
+        h1{
+            font-size: 28px;
+        }
+
+        .buttons{
+            gap: 6px;
+            margin: 6px 0;
+        }
+
+        .button{
+            font-size: 15px;
+            padding: 10px 12px;
+            border-radius: 9px;
+            flex: 1 1 calc(33.333% - 6px);
+        }
+
+        .task-title{
+            font-size: 21px;
+            margin-bottom: 6px;
+        }
+
+        .task-content, 
+        .instructions{
+            font-size: 18px;
+        }
+
+        .task-container{
+            padding: 6px;
+            margin-top: 6px;
+            border-radius: 12px;
+            min-height: calc(100vh - 78px);
+        }
+
+        .task-frame{
+            height: calc(100vh - 130px);
+            min-height: 650px;
+            border-radius: 8px;
+        }
+
+        .cover-image {
+            border-radius: 8px;
+            margin-top: 6px;
+        }
+    }
+
+    @media (max-width: 600px){
+        body{
+            padding: 4px;
+        }
+
+        .buttons{
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 6px;
+        }
+
+        .button{
+            width: 100%;
+            font-size: 15px;
+            padding: 11px 10px;
+            min-height: 44px;
+        }
+
+        .task-container{
+            padding: 4px;
+            margin-top: 4px;
+            border-radius: 10px;
+            min-height: calc(100vh - 165px);
+        }
+
+        .task-title{
+            font-size: 19px;
+            margin-bottom: 4px;
+        }
+
+        .task-frame{
+            height: calc(100vh - 190px);
+            min-height: 600px;
+            border-radius: 8px;
+        }
+    }
+
+    @media (max-width: 380px){
+        .button{
+            font-size: 14px;
+            padding: 10px 8px;
+        }
+
+        .task-title{
+            font-size: 18px;
+        }
+
+        .task-frame{
+            height: calc(100vh - 185px);
+            min-height: 560px;
+        }
+    }
+    </style>
+</head>
+<body>
+<div class="page">
+    <div class="buttons">
+        <button class="button" type="button" onclick="openTask('tasks/phrases.html', this)">Conflict Phrases</button>
+        <button class="button" type="button" onclick="openTask('tasks/questions.html', this)">Match the Questions and the Answers</button>
+        <button class="button" type="button" onclick="openTask('tasks/monologue.html', this)">Monologue</button>
+    </div>
+
+    <!-- Cover Image -->
+    <img src="images/1.jpg" alt="Cover Image" class="cover-image" id="coverImage">
+
+    <div class="task-container" id="taskContainer" style="display:none;">
+        <div class="task-title" id="taskTitle"></div>
+        <iframe class="task-frame" id="taskFrame" title="Task"></iframe>
+    </div>
+</div>
+
+<script>
+    function openTask(taskUrl, button){
+        // Задания теперь переключаются внутри этого файла, без перехода на другую страницу.
+        const taskFrame = document.getElementById('taskFrame');
+        const taskContainer = document.getElementById('taskContainer');
+        const taskTitle = document.getElementById('taskTitle');
+        const coverImage = document.getElementById('coverImage');
+
+        taskFrame.src = taskUrl;
+        taskContainer.style.display = 'block';
+        coverImage.style.display = 'none';
+        taskTitle.textContent = button.textContent;
+
+        document.querySelectorAll('.button').forEach(function(btn){
+            btn.classList.remove('active');
+        });
+        button.classList.add('active');
+    }
+</script>
+</body>
+</html>
