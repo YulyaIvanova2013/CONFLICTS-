@@ -1,0 +1,146 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Conflict with Friends Task</title>
+    <style>
+    :root{
+        --bg1:#e8f0ff;
+        --bg2:#efe7ff;
+        --card:#ffffff;
+        --primary:#6b5bdb;
+        --primary-dark:#5142bf;
+        --secondary:#4f8cff;
+        --text:#24324a;
+        --correct:#35b56a;
+        --incorrect:#e45555;
+        --hint-bg:#fff4cc;
+        --hint-text:#7a5b00;
+        --shadow:0 10px 24px rgba(77, 67, 146, 0.15);
+    }
+
+    * { box-sizing: border-box; }
+
+    body{
+        margin:0;
+        font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+        color:var(--text);
+        background: linear-gradient(135deg, var(--bg1), var(--bg2));
+        min-height:100vh;
+        padding:24px;
+    }
+
+    .page{
+        max-width: 1300px;
+        margin: 0 auto;
+    }
+
+    h1{
+        text-align:center;
+        color:var(--primary-dark);
+        margin: 0 0 10px;
+        font-size: 40px;  /* Increased font size */
+        font-weight: bold;
+    }
+
+    .subtitle{
+        text-align:center;
+        margin: 0 0 24px;
+        font-size: 24px;  /* Increased font size */
+        font-weight: bold;
+        color:#42506d;
+    }
+
+    .task-container{
+        background: var(--card);
+        border-radius: 22px;
+        padding: 30px;
+        box-shadow: var(--shadow);
+        min-height: 500px;
+        margin-top: 20px;
+    }
+
+    .task-title{
+        text-align:center;
+        color:var(--primary-dark);
+        margin: 0 0 18px;
+        font-size: 32px;  /* Increased font size */
+        font-weight: bold;
+    }
+
+    .task-content{
+        font-size: 24px;  /* Increased font size */
+        color: var(--text);
+        line-height: 1.6;
+        margin-bottom: 24px;
+        font-weight: bold;
+    }
+
+    .instructions{
+        font-size: 22px;  /* Increased font size */
+        margin-bottom: 12px;
+        font-weight: bold;
+    }
+
+    .message{
+        text-align:center;
+        margin-top:16px;
+        font-size:24px;  /* Increased font size */
+        font-weight:700;
+        color:var(--primary-dark);
+        min-height: 24px;
+    }
+
+    @media (max-width: 900px){
+        .page{
+            padding: 15px;
+        }
+
+        h1{
+            font-size: 30px;
+        }
+
+        .subtitle, .task-title, .task-content, .instructions{
+            font-size: 20px;
+        }
+
+        .message{
+            font-size: 20px;
+        }
+    }
+    </style>
+</head>
+<body>
+<div class="page">
+    <h1>Conflict with Friends: Speaking Task</h1>
+    <p class="subtitle">You are going to give a talk about conflicts with your friends. You will have to start in 1.5 minutes and speak for no more than 2 minutes (10-12 sentences).</p>
+
+    <div class="task-container">
+        <h2 class="task-title">Task Instructions</h2>
+        <p class="task-content">
+            In this task, you will talk about conflicts with your friends. You need to focus on the following aspects:
+        </p>
+        <ul class="instructions">
+            <li>Why teenagers can have a conflict with their friends.</li>
+            <li>What you usually have conflicts with your friends about.</li>
+            <li>How you usually make up with your friends.</li>
+            <li>What your attitude to conflicts with your friends is.</li>
+        </ul>
+
+        <div class="message" id="message">Prepare to speak!</div>
+    </div>
+</div>
+
+<script>
+    function startTask(){
+        document.getElementById("message").textContent = "You are ready to start your talk. Begin now!";
+    }
+
+    function resetTask(){
+        document.getElementById("message").textContent = "Prepare to speak!";
+    }
+</script>
+</body>
+</html>

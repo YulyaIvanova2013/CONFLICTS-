@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Conflict Phrases</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: 'Nunito', Arial, sans-serif;
+            background: linear-gradient(135deg, #eef7ff 0%, #f8f1ff 50%, #fff8e8 100%);
+            color: #2f2a4a;
+            padding: 24px;
+        }
+        .page {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+        .instructions {
+            background: rgba(255,255,255,0.92);
+            border: 3px solid #8b7cf6;
+            border-radius: 24px;
+            padding: 20px 24px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(95, 76, 180, 0.12);
+            margin-bottom: 24px;
+        }
+        .instructions h1 {
+            margin: 0 0 8px;
+            font-size: 32px;
+            color: #5b4fcf;
+        }
+        .instructions p {
+            margin: 0;
+            font-size: 18px;
+            line-height: 1.5;
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+            margin-bottom: 22px;
+        }
+        .section {
+            background: rgba(255,255,255,0.95);
+            border-radius: 24px;
+            padding: 18px;
+            min-height: 270px;
+            border: 3px solid #c9c2ff;
+            box-shadow: 0 10px 22px rgba(70, 60, 140, 0.1);
+        }
+        .section h3 {
+            margin: 0 0 14px;
+            text-align: center;
+            font-size: 22px;
+            color: #4d419c;
+        }
+        .dropzone {
+            min-height: 190px;
+            border: 2px dashed #d7d1ff;
+            border-radius: 18px;
+            padding: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            align-content: flex-start;
+            gap: 10px;
+            transition: background 0.2s ease, border-color 0.2s ease;
+        }
+        .dropzone.hovered {
+            background: #f5f2ff;
+            border-color: #8b7cf6;
+        }
+        .phrase-bank {
+            background: rgba(255,255,255,0.95);
+            border: 3px solid #ffcc70;
+            border-radius: 24px;
+            padding: 18px;
+            box-shadow: 0 10px 22px rgba(180, 132, 40, 0.12);
+        }
+        .phrase-bank h3 {
+            margin: 0 0 14px;
+            text-align: center;
+            font-size: 22px;
+            color: #b26a00;
+        }
+        .phrase-list {
+            min-height: 96px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        .phrase {
+            padding: 10px 14px;
+            background: linear-gradient(135deg, #7ed6ff, #70b8ff);
+            color: #17324f;
+            border-radius: 999px;
+            font-weight: 800;
+            cursor: grab;
+            user-select: none;
+            box-shadow: 0 5px 12px rgba(63, 123, 191, 0.18);
+            border: 2px solid rgba(255,255,255,0.7);
+            transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+        }
+        .phrase:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 14px rgba(63, 123, 191, 0.22);
+        }
+        .phrase.correct {
+            background: linear-gradient(135deg, #8ff0ae, #61d68b);
+            color: #124021;
+        }
+        .phrase.incorrect {
+            background: linear-gradient(135deg, #ffadb3, #ff7d8c);
+            color: #5b1621;
+        }
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        button {
+            border: none;
+            border-radius: 999px;
+            padding: 12px 22px;
+            font-family: inherit;
+            font-size: 17px;
+            font-weight: 800;
+            cursor: pointer;
+            color: white;
+            box-shadow: 0 8px 18px rgba(67, 52, 143, 0.18);
+        }
+        .reset-button { background: linear-gradient(135deg, #7d6bff, #5f52d9); }
+        .shuffle-button { background: linear-gradient(135deg, #ffb347, #ff8d41); }
+        .hint {
+            text-align: center;
+            margin-top: 14px;
+            color: #62588b;
+            font-size: 15px;
+        }
+        @media (max-width: 900px) {
+            .board { grid-template-columns: 1fr; }
+            .instructions h1 { font-size: 28px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+         <div class="board">
+            <div class="section">
+                <h3>Reasons for Conflicts</h3>
+                <div class="dropzone" id="reasons-for-conflicts" ondrop="drop(event)" ondragover="allowDrop(event)" ondragenter="hoverOn(event)" ondragleave="hoverOff(event)"></div>
+            </div>
+            <div class="section">
+                <h3>Making Up</h3>
+                <div class="dropzone" id="making-up" ondrop="drop(event)" ondragover="allowDrop(event)" ondragenter="hoverOn(event)" ondragleave="hoverOff(event)"></div>
+            </div>
+            <div class="section">
+                <h3>Attitude to Conflicts</h3>
+                <div class="dropzone" id="attitude-to-conflicts" ondrop="drop(event)" ondragover="allowDrop(event)" ondragenter="hoverOn(event)" ondragleave="hoverOff(event)"></div>
+            </div>
+        </div>
+
+        <div class="phrase-bank">
+            <h3>Drag a phrase into the correct section</h3>
+            <div class="phrase-list dropzone" id="phrase-bank" ondrop="drop(event)" ondragover="allowDrop(event)" ondragenter="hoverOn(event)" ondragleave="hoverOff(event)">
+                <div class="phrase" id="phrase1" draggable="true" ondragstart="drag(event)">feel left out</div>
+                <div class="phrase" id="phrase2" draggable="true" ondragstart="drag(event)">feel upset</div>
+                <div class="phrase" id="phrase3" draggable="true" ondragstart="drag(event)">get jealous</div>
+                <div class="phrase" id="phrase4" draggable="true" ondragstart="drag(event)">hurt someone's feelings</div>
+                <div class="phrase" id="phrase5" draggable="true" ondragstart="drag(event)">say something without thinking</div>
+                <div class="phrase" id="phrase6" draggable="true" ondragstart="drag(event)">snap at someone</div>
+                <div class="phrase" id="phrase7" draggable="true" ondragstart="drag(event)">make up quickly</div>
+                <div class="phrase" id="phrase8" draggable="true" ondragstart="drag(event)">stay angry for long</div>
+                <div class="phrase" id="phrase9" draggable="true" ondragstart="drag(event)">send a funny meme</div>
+                <div class="phrase" id="phrase10" draggable="true" ondragstart="drag(event)">text something funny</div>
+                <div class="phrase" id="phrase11" draggable="true" ondragstart="drag(event)">talk it out</div>
+                <div class="phrase" id="phrase12" draggable="true" ondragstart="drag(event)">apologize</div>
+                <div class="phrase" id="phrase13" draggable="true" ondragstart="drag(event)">say sorry</div>
+                <div class="phrase" id="phrase14" draggable="true" ondragstart="drag(event)">misunderstanding and jealousy</div>
+                <div class="phrase" id="phrase15" draggable="true" ondragstart="drag(event)">conflicts are a normal part of friendships</div>
+                <div class="phrase" id="phrase16" draggable="true" ondragstart="drag(event)">part of being friends</div>
+                <div class="phrase" id="phrase17" draggable="true" ondragstart="drag(event)">can make the bond stronger</div>
+                <div class="phrase" id="phrase18" draggable="true" ondragstart="drag(event)">make you closer</div>
+                <div class="phrase" id="phrase19" draggable="true" ondragstart="drag(event)">learn to understand each other better</div>
+                <div class="phrase" id="phrase20" draggable="true" ondragstart="drag(event)">friendship feels even better</div>
+            </div>
+            <div class="controls">
+                <button class="reset-button" onclick="resetTask()">Reset</button>
+                <button class="shuffle-button" onclick="shufflePhrases()">Shuffle phrases</button>
+            </div>
+            <div class="hint">You can drag phrases back to the bank or move them between sections any time.</div>
+        </div>
+    </div>
+
+    <script>
+        const bank = document.getElementById('phrase-bank');
+        const dropzones = Array.from(document.querySelectorAll('.dropzone'));
+        const phrases = Array.from(document.querySelectorAll('.phrase'));
+
+        const correctAssignments = {
+            'reasons-for-conflicts': [
+                'feel left out', 'get jealous', "hurt someone's feelings", 'say something without thinking',
+                'snap at someone', 'misunderstanding and jealousy'
+            ],
+            'making-up': [
+                'make up quickly', 'send a funny meme', 'text something funny', 'talk it out', 'apologize', 'say sorry'
+            ],
+            'attitude-to-conflicts': [
+                'feel upset', 'stay angry for long', 'conflicts are a normal part of friendships', 'part of being friends',
+                'can make the bond stronger', 'make you closer', 'learn to understand each other better', 'friendship feels even better'
+            ]
+        };
+
+        function cleanPhraseState(phrase) {
+            phrase.classList.remove('correct', 'incorrect');
+        }
+
+        function evaluatePhrase(phrase, zoneId) {
+            cleanPhraseState(phrase);
+            if (zoneId === 'phrase-bank') return;
+            const text = phrase.textContent.trim();
+            if ((correctAssignments[zoneId] || []).includes(text)) {
+                phrase.classList.add('correct');
+            } else {
+                phrase.classList.add('incorrect');
+            }
+        }
+
+        function handleDragStart(event) {
+            event.dataTransfer.setData('text/plain', event.target.id);
+            event.dataTransfer.effectAllowed = 'move';
+        }
+
+        function allowDrop(event) {
+            event.preventDefault();
+            event.dataTransfer.dropEffect = 'move';
+        }
+
+        function hoverOn(event) {
+            event.preventDefault();
+            event.currentTarget.classList.add('hovered');
+        }
+
+        function hoverOff(event) {
+            if (!event.currentTarget.contains(event.relatedTarget)) {
+                event.currentTarget.classList.remove('hovered');
+            }
+        }
+
+        function drop(event) {
+            event.preventDefault();
+            const phraseId = event.dataTransfer.getData('text/plain');
+            const phrase = document.getElementById(phraseId);
+            const zone = event.currentTarget;
+            if (!phrase || !zone) return;
+            zone.classList.remove('hovered');
+            zone.appendChild(phrase);
+            evaluatePhrase(phrase, zone.id);
+        }
+
+        function resetTask() {
+            phrases.forEach(phrase => {
+                cleanPhraseState(phrase);
+                bank.appendChild(phrase);
+            });
+            shufflePhrases();
+        }
+
+        function shufflePhrases() {
+            // collect all phrases back to the bank first so the shuffle is visible and consistent
+            phrases.forEach(phrase => {
+                cleanPhraseState(phrase);
+                bank.appendChild(phrase);
+            });
+
+            const shuffled = Array.from(bank.querySelectorAll('.phrase'));
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            shuffled.forEach(phrase => bank.appendChild(phrase));
+        }
+
+        phrases.forEach(phrase => {
+            phrase.draggable = true;
+            phrase.addEventListener('dragstart', handleDragStart);
+        });
+
+        dropzones.forEach(zone => {
+            zone.addEventListener('dragover', allowDrop);
+            zone.addEventListener('drop', drop);
+            zone.addEventListener('dragenter', hoverOn);
+            zone.addEventListener('dragleave', hoverOff);
+        });
+
+        shufflePhrases();
+    </script>
+</body>
+</html>

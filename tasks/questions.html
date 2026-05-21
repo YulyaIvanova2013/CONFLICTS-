@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Match Questions and Answers</title>
+
+    <style>
+    :root{
+        --bg1:#e8f0ff;
+        --bg2:#efe7ff;
+        --card:#ffffff;
+        --primary:#6b5bdb;
+        --primary-dark:#5142bf;
+        --secondary:#4f8cff;
+        --text:#24324a;
+        --correct:#35b56a;
+        --incorrect:#e45555;
+        --hint-bg:#fff4cc;
+        --hint-text:#7a5b00;
+        --shadow:0 10px 24px rgba(77, 67, 146, 0.15);
+    }
+
+    * { box-sizing: border-box; }
+
+    body{
+        margin:0;
+        font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+        color:var(--text);
+        background: linear-gradient(135deg, var(--bg1), var(--bg2));
+        min-height:100vh;
+        padding:24px;
+    }
+
+    .page{
+        max-width: 1300px;
+        margin: 0 auto;
+    }
+
+    h1{
+        text-align:center;
+        color:var(--primary-dark);
+        margin: 0 0 10px;
+        font-size: 32px;
+    }
+
+    .subtitle{
+        text-align:center;
+        margin: 0 0 24px;
+        font-size: 18px;
+        color:#42506d;
+    }
+
+    .board{
+        display:grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        align-items:start;
+    }
+
+    .column{
+        background: var(--card);
+        border-radius: 22px;
+        padding: 20px;
+        box-shadow: var(--shadow);
+        min-height: 720px;
+    }
+
+    .column-title{
+        text-align:center;
+        color:var(--primary-dark);
+        margin: 0 0 18px;
+        font-size: 24px;
+    }
+
+    .list{
+        display:flex;
+        flex-direction:column;
+        gap:12px;
+    }
+
+    .question-wrap{
+        display:flex;
+        flex-direction:column;
+        gap:6px;
+    }
+
+    .item{
+        border:none;
+        width:100%;
+        text-align:left;
+        background: var(--primary);
+        color:white;
+        padding:14px 16px;
+        border-radius:16px;
+        font-size:17px;
+        line-height:1.35;
+        cursor:pointer;
+        transition: transform .12s ease, background .12s ease, box-shadow .12s ease;
+        box-shadow: 0 6px 14px rgba(107, 91, 219, 0.20);
+    }
+
+    .item:hover{
+        transform: translateY(-1px);
+        background: var(--primary-dark);
+    }
+
+    .question-item.selected{
+        outline: 4px solid rgba(79, 140, 255, 0.38);
+        background: var(--secondary);
+    }
+
+    .question-item.linked,
+    .answer-item.linked{
+        background: #7c8fff;
+    }
+
+    .question-item.correct,
+    .answer-item.correct{
+        background: var(--correct) !important;
+        box-shadow: 0 6px 14px rgba(53, 181, 106, 0.24);
+    }
+
+    .question-item.incorrect,
+    .answer-item.incorrect{
+        background: var(--incorrect) !important;
+        box-shadow: 0 6px 14px rgba(228, 85, 85, 0.24);
+    }
+
+    .question-hint{
+        display:none;
+        background: var(--hint-bg);
+        color: var(--hint-text);
+        border-radius: 12px;
+        padding: 8px 12px;
+        font-size: 14px;
+        font-weight: 700;
+        border: 2px dashed #e3c35b;
+    }
+
+    .question-hint.show{
+        display:block;
+    }
+
+    .controls{
+        display:flex;
+        justify-content:center;
+        gap:14px;
+        flex-wrap:wrap;
+        margin-top: 24px;
+    }
+
+    .control-btn{
+        border:none;
+        border-radius:14px;
+        padding:12px 22px;
+        font-size:16px;
+        font-weight:700;
+        cursor:pointer;
+        color:white;
+        background: var(--primary);
+        box-shadow: var(--shadow);
+        transition: background .12s ease, transform .12s ease;
+    }
+
+    .control-btn:hover{
+        background: var(--primary-dark);
+        transform: translateY(-1px);
+    }
+
+    .message{
+        text-align:center;
+        margin-top:16px;
+        font-size:18px;
+        font-weight:700;
+        color:var(--primary-dark);
+        min-height: 24px;
+    }
+
+    .summary-box{
+        display:none;
+        margin-top: 22px;
+        background: #ffffff;
+        border-radius: 20px;
+        box-shadow: var(--shadow);
+        padding: 18px 20px;
+    }
+
+    .summary-box.show{
+        display:block;
+    }
+
+    .summary-title{
+        margin:0 0 10px;
+        color:var(--primary-dark);
+        font-size:22px;
+        text-align:center;
+    }
+
+    .summary-text{
+        margin:0 0 12px;
+        text-align:center;
+        color:#4d5b77;
+        font-size:16px;
+    }
+
+    .pairs-list{
+        display:grid;
+        grid-template-columns: repeat(2, minmax(0,1fr));
+        gap:10px 18px;
+        margin:0;
+        padding:0;
+        list-style:none;
+    }
+
+    .pairs-list li{
+        background:#f3efff;
+        border-radius:14px;
+        padding:10px 12px;
+        color:#3d3378;
+        font-weight:700;
+    }
+
+    @media (max-width: 900px){
+        .board{
+            grid-template-columns: 1fr;
+            overflow-x:auto;
+        }
+        .column{
+            min-width: 420px;
+        }
+        .pairs-list{
+            grid-template-columns: 1fr;
+        }
+        .controls{
+            flex-direction: column;
+            gap: 10px;
+        }
+    }
+    
+    :root{
+        --bg1:#e8f0ff;
+        --bg2:#efe7ff;
+        --card:#ffffff;
+        --primary:#6b5bdb;
+        --primary-dark:#5142bf;
+        --secondary:#4f8cff;
+        --text:#24324a;
+        --correct:#35b56a;
+        --incorrect:#e45555;
+        --hint-bg:#fff4cc;
+        --hint-text:#7a5b00;
+        --shadow:0 10px 24px rgba(77, 67, 146, 0.15);
+    }
+
+    * { box-sizing: border-box; }
+
+    body{
+        margin:0;
+        font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+        color:var(--text);
+        background: linear-gradient(135deg, var(--bg1), var(--bg2));
+        min-height:100vh;
+        padding:24px;
+    }
+
+    .page{
+        max-width: 1300px;
+        margin: 0 auto;
+    }
+
+    h1{
+        text-align:center;
+        color:var(--primary-dark);
+        margin: 0 0 10px;
+        font-size: 32px;
+    }
+
+    .subtitle{
+        text-align:center;
+        margin: 0 0 24px;
+        font-size: 18px;
+        color:#42506d;
+    }
+
+    .board{
+        display:grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        align-items:start;
+    }
+
+    .column{
+        background: var(--card);
+        border-radius: 22px;
+        padding: 20px;
+        box-shadow: var(--shadow);
+        min-height: 720px;
+    }
+
+    .column-title{
+        text-align:center;
+        color:var(--primary-dark);
+        margin: 0 0 18px;
+        font-size: 24px;
+    }
+
+    .list{
+        display:flex;
+        flex-direction:column;
+        gap:12px;
+    }
+
+    .question-wrap{
+        display:flex;
+        flex-direction:column;
+        gap:6px;
+    }
+
+    .item{
+        border:none;
+        width:100%;
+        text-align:left;
+        background: var(--primary);
+        color:white;
+        padding:14px 16px;
+        border-radius:16px;
+        font-size:17px;
+        line-height:1.35;
+        cursor:pointer;
+        transition: transform .12s ease, background .12s ease, box-shadow .12s ease;
+        box-shadow: 0 6px 14px rgba(107, 91, 219, 0.20);
+    }
+
+    .item:hover{
+        transform: translateY(-1px);
+        background: var(--primary-dark);
+    }
+
+    .question-item.selected{
+        outline: 4px solid rgba(79, 140, 255, 0.38);
+        background: var(--secondary);
+    }
+
+    .question-item.linked,
+    .answer-item.linked{
+        background: #7c8fff;
+    }
+
+    .question-item.correct,
+    .answer-item.correct{
+        background: var(--correct) !important;
+        box-shadow: 0 6px 14px rgba(53, 181, 106, 0.24);
+    }
+
+    .question-item.incorrect,
+    .answer-item.incorrect{
+        background: var(--incorrect) !important;
+        box-shadow: 0 6px 14px rgba(228, 85, 85, 0.24);
+    }
+
+    .question-hint{
+        display:none;
+        background: var(--hint-bg);
+        color: var(--hint-text);
+        border-radius: 12px;
+        padding: 8px 12px;
+        font-size: 14px;
+        font-weight: 700;
+        border: 2px dashed #e3c35b;
+    }
+
+    .question-hint.show{
+        display:block;
+    }
+
+    .controls{
+        display:flex;
+        justify-content:center;
+        gap:14px;
+        flex-wrap:wrap;
+        margin-top: 24px;
+    }
+
+    .control-btn{
+        border:none;
+        border-radius:14px;
+        padding:12px 22px;
+        font-size:16px;
+        font-weight:700;
+        cursor:pointer;
+        color:white;
+        background: var(--primary);
+        box-shadow: var(--shadow);
+        transition: background .12s ease, transform .12s ease;
+    }
+
+    .control-btn:hover{
+        background: var(--primary-dark);
+        transform: translateY(-1px);
+    }
+
+    .message{
+        text-align:center;
+        margin-top:16px;
+        font-size:18px;
+        font-weight:700;
+        color:var(--primary-dark);
+        min-height: 24px;
+    }
+
+    .summary-box{
+        display:none;
+        margin-top: 22px;
+        background: #ffffff;
+        border-radius: 20px;
+        box-shadow: var(--shadow);
+        padding: 18px 20px;
+    }
+
+    .summary-box.show{
+        display:block;
+    }
+
+    .summary-title{
+        margin:0 0 10px;
+        color:var(--primary-dark);
+        font-size:22px;
+        text-align:center;
+    }
+
+    .summary-text{
+        margin:0 0 12px;
+        text-align:center;
+        color:#4d5b77;
+        font-size:16px;
+    }
+
+    .pairs-list{
+        display:grid;
+        grid-template-columns: repeat(2, minmax(0,1fr));
+        gap:10px 18px;
+        margin:0;
+        padding:0;
+        list-style:none;
+    }
+
+    .pairs-list li{
+        background:#f3efff;
+        border-radius:14px;
+        padding:10px 12px;
+        color:#3d3378;
+        font-weight:700;
+    }
+
+    @media (max-width: 900px){
+        .board{
+            grid-template-columns: 1fr 1fr;
+            overflow-x:auto;
+        }
+        .column{
+            min-width: 420px;
+        }
+        .pairs-list{
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+</head>
+<body>
+<div class="page">
+    <h1>Match the Questions and Their Possible Answers</h1>
+    <p class="subtitle">Click a question on the left, then click the matching answer on the right.</p>
+
+    <div class="board">
+        <section class="column">
+            <h2 class="column-title">Questions</h2>
+            <div class="list" id="questionsList">
+                <div class="question-wrap">
+                    <button class="item question-item" data-id="1">1) When was the last time you had a small conflict with a friend? What happened?</button>
+                    <div class="question-hint" data-hint-for="1"></div>
+                </div>
+                <div class="question-wrap">
+                    <button class="item question-item" data-id="2">2) Have you ever felt jealous of a friend? Why? How did you handle it?</button>
+                    <div class="question-hint" data-hint-for="2"></div>
+                </div>
+                <div class="question-wrap">
+                    <button class="item question-item" data-id="3">3) What makes you feel upset in a friendship? How do you react?</button>
+                    <div class="question-hint" data-hint-for="3"></div>
+                </div>
+                <div class="question-wrap">
+                    <button class="item question-item" data-id="4">4) Do you think it's normal for friends to have arguments? Why or why not?</button>
+                    <div class="question-hint" data-hint-for="4"></div>
+                </div>
+                <div class="question-wrap">
+                    <button class="item question-item" data-id="5">5) What do you do when you realise you’ve hurt your friend's feelings?</button>
+                    <div class="question-hint" data-hint-for="5"></div>
+                </div>
+                <div class="question-wrap">
+                    <button class="item question-item" data-id="6">6) Have you ever snapped at a friend? What happened after that?</button>
+                    <div class="question-hint" data-hint-for="6"></div>
+                </div>
+                <div class="question-wrap">
+                    <button class="item question-item" data-id="7">7) How can small misunderstandings become bigger problems in a friendship?</button>
+                    <div class="question-hint" data-hint-for="7"></div>
+                </div>
+                <div class="question-wrap">
+                    <button class="item question-item" data-id="8">8) What advice would you give to a friend who feels left out by their best friend?</button>
+                    <div class="question-hint" data-hint-for="8"></div>
+                </div>
+                <div class="question-wrap">
+                    <button class="item question-item" data-id="9">9) Is it better to talk immediately after a conflict, or wait some time? Why?</button>
+                    <div class="question-hint" data-hint-for="9"></div>
+                </div>
+                <div class="question-wrap">
+                    <button class="item question-item" data-id="10">10) Why do friends sometimes feel jealous of each other? Give examples.</button>
+                    <div class="question-hint" data-hint-for="10"></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="column">
+            <h2 class="column-title">Answers</h2>
+            <div class="list" id="answersList"></div>
+        </section>
+    </div>
+
+    <div class="controls">
+        <button class="control-btn" onclick="checkAnswers()">Check</button>
+        <button class="control-btn" onclick="shuffleAnswers()">Shuffle Answers</button>
+        <button class="control-btn" onclick="resetTask()">Reset</button>
+    </div>
+
+    <div class="message" id="message"></div>
+
+    <section class="summary-box" id="summaryBox">
+        <h3 class="summary-title">Correct pairs</h3>
+        <p class="summary-text">Too many mistakes? Here are the correct question and answer pairs.</p>
+        <ul class="pairs-list" id="pairsList"></ul>
+    </section>
+</div>
+
+<script>
+const answersData = [
+    { letter: "a", match: "1", text: "My best friend forgot my birthday. I felt left out and took it personally." },
+    { letter: "b", match: "3", text: "When my friends hang out without inviting me, I feel left out and upset. I try not to snap at them, but sometimes it's hard." },
+    { letter: "c", match: "5", text: "I give them space because I know they feel upset. Then I text them and say sorry for making them feel left out or sad." },
+    { letter: "d", match: "2", text: "I got jealous when my cousin got a new phone and I didn't. I snapped at her for no reason. Later I understood that friendships have ups and downs and it's normal." },
+    { letter: "e", match: "4", text: "Of course! Sometimes we say something without thinking and hurt our friend's feelings. That's just human." },
+    { letter: "f", match: "10", text: "Jealousy often comes when you take things personally. For example, if your friend wins a competition, you might feel upset instead of happy for them." },
+    { letter: "g", match: "8", text: "It’s a good idea to explain that you feel left out and ask what's going on. But don’t snap at them without thinking." },
+    { letter: "h", match: "6", text: "I snapped at my brother when he took my charger. I said something without thinking and he took it personally. But later I apologised. Brothers always have ups and downs." },
+    { letter: "i", match: "7", text: "When you take things personally, you think your friend did it on purpose. This can cause misunderstanding and you might fall out." },
+    { letter: "j", match: "9", text: "I prefer to talk soon, but not when I want to snap at them. First I give us space to calm down, then we talk it out." }
+];
+
+let selectedQuestion = null;
+const pairs = {};
+const questions = Array.from(document.querySelectorAll('.question-item'));
+const answersList = document.getElementById('answersList');
+const message = document.getElementById('message');
+const summaryBox = document.getElementById('summaryBox');
+const pairsList = document.getElementById('pairsList');
+
+function createAnswerButton(answer){
+    const btn = document.createElement('button');
+    btn.className = 'item answer-item';
+    btn.type = 'button';
+    btn.dataset.match = answer.match;
+    btn.dataset.letter = answer.letter;
+    btn.innerHTML = `<strong>${answer.letter})</strong> ${answer.text}`;
+    btn.addEventListener('click', () => assignAnswer(btn));
+    return btn;
+}
+
+function renderAnswers(arr){
+    answersList.innerHTML = '';
+    arr.forEach(answer => answersList.appendChild(createAnswerButton(answer)));
+}
+
+function shuffleAnswers(){
+    const shuffled = [...answersData].sort(() => Math.random() - 0.5);
+    renderAnswers(shuffled);
+    clearStates(false);
+    clearHints();
+    hideSummary();
+    message.textContent = '';
+}
+
+function renderAnswersInOrder(){
+    renderAnswers(answersData);
+}
+
+questions.forEach(question => {
+    question.addEventListener('click', () => {
+        questions.forEach(q => q.classList.remove('selected'));
+        question.classList.add('selected');
+        selectedQuestion = question;
+    });
+});
+
+function assignAnswer(answerButton){
+    if(!selectedQuestion) return;
+
+    const questionId = selectedQuestion.dataset.id;
+
+    const oldAnswer = pairs[questionId];
+    if(oldAnswer && oldAnswer !== answerButton){
+        oldAnswer.classList.remove('linked', 'correct', 'incorrect');
+    }
+
+    for(const [qid, ansBtn] of Object.entries(pairs)){
+        if(ansBtn === answerButton && qid !== questionId){
+            const oldQuestion = document.querySelector(`.question-item[data-id="${qid}"]`);
+            if(oldQuestion){
+                oldQuestion.classList.remove('linked', 'correct', 'incorrect', 'selected');
+            }
+            hideHint(qid);
+            delete pairs[qid];
+        }
+    }
+
+    pairs[questionId] = answerButton;
+
+    selectedQuestion.classList.remove('selected', 'correct', 'incorrect');
+    selectedQuestion.classList.add('linked');
+
+    answerButton.classList.remove('correct', 'incorrect');
+    answerButton.classList.add('linked');
+
+    hideHint(questionId);
+    hideSummary();
+    selectedQuestion = null;
+    message.textContent = '';
+}
+
+function clearStates(clearPairs = true){
+    questions.forEach(q => q.classList.remove('selected', 'linked', 'correct', 'incorrect'));
+    document.querySelectorAll('.answer-item').forEach(a => a.classList.remove('linked', 'correct', 'incorrect'));
+    if(clearPairs){
+        for(const key of Object.keys(pairs)) delete pairs[key];
+        selectedQuestion = null;
+    }
+}
+
+function showHint(questionId, letter){
+    const hint = document.querySelector(`.question-hint[data-hint-for="${questionId}"]`);
+    if(hint){
+        hint.textContent = `Correct answer: ${letter})`;
+        hint.classList.add('show');
+    }
+}
+
+function hideHint(questionId){
+    const hint = document.querySelector(`.question-hint[data-hint-for="${questionId}"]`);
+    if(hint){
+        hint.textContent = '';
+        hint.classList.remove('show');
+    }
+}
+
+function clearHints(){
+    document.querySelectorAll('.question-hint').forEach(hint => {
+        hint.textContent = '';
+        hint.classList.remove('show');
+    });
+}
+
+function showSummary(){
+    pairsList.innerHTML = '';
+    answersData.forEach(item => {
+        const li = document.createElement('li');
+        li.textContent = `${item.match} → ${item.letter})`;
+        pairsList.appendChild(li);
+    });
+    summaryBox.classList.add('show');
+}
+
+function hideSummary(){
+    summaryBox.classList.remove('show');
+    pairsList.innerHTML = '';
+}
+
+function checkAnswers(){
+    questions.forEach(q => q.classList.remove('correct', 'incorrect'));
+    document.querySelectorAll('.answer-item').forEach(a => a.classList.remove('correct', 'incorrect'));
+    clearHints();
+    hideSummary();
+
+    let correctCount = 0;
+    let wrongCount = 0;
+
+    for(const question of questions){
+        const qid = question.dataset.id;
+        const selectedAnswer = pairs[qid];
+
+        if(!selectedAnswer) continue;
+
+        if(selectedAnswer.dataset.match === qid){
+            question.classList.add('correct');
+            selectedAnswer.classList.add('correct');
+            correctCount++;
+        } else {
+            wrongCount++;
+            question.classList.add('incorrect');
+            selectedAnswer.classList.add('incorrect');
+
+            const correctAnswerData = answersData.find(item => item.match === qid);
+            const correctAnswer = document.querySelector(`.answer-item[data-match="${qid}"]`);
+
+            if(correctAnswer){
+                correctAnswer.classList.add('correct');
+            }
+
+            if(correctAnswerData){
+                showHint(qid, correctAnswerData.letter);
+            }
+        }
+    }
+
+    const totalAnswered = Object.keys(pairs).length;
+    if(totalAnswered === 0){
+        message.textContent = 'Choose a question and an answer first.';
+    } else if(correctCount === 10){
+        message.textContent = 'Excellent! All answers are correct.';
+    } else {
+        message.textContent = `Correct: ${correctCount} / 10`;
+    }
+
+    if(wrongCount >= 4){
+        showSummary();
+    }
+}
+
+function resetTask(){
+    renderAnswersInOrder();
+    clearStates(true);
+    clearHints();
+    hideSummary();
+    message.textContent = '';
+}
+
+renderAnswersInOrder();
+</script>
+</body>
+</html>
